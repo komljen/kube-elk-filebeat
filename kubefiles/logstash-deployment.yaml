@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: logstash
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: logstash
+    spec:
+      containers:
+      - env:
+        - name: LS_JAVA_OPTS
+          value: -Xmx256m -Xms256m
+        image: komljen/logstash
+        name: logstash
+        ports:
+        - containerPort: 5000
+        resources: {}
+        volumeMounts:
+        - mountPath: /usr/share/logstash/pipeline
+          name: config
+      restartPolicy: Always
+      volumes:
+      - name: config
+        configMap:
+          name: logstash-config
+          items:
+          - key: logstash.conf
+            path: logstash.conf
+status: {}
